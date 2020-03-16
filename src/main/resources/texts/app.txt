@@ -1,0 +1,6 @@
+Welcome ,What you want to do?
+enter 0 for exit
+enter 1 add student
+enter 2 for see all students
+enter 3 for delete one student
+your choice:
