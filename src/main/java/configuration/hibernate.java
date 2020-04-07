@@ -4,11 +4,9 @@ import org.apache.commons.dbcp2.BasicDataSource;
 //import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 //import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.*;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -24,14 +22,17 @@ import java.util.stream.Collectors;
 @EnableTransactionManagement
 @ComponentScan(value = {"service","repository","aspects"})
 @EnableAspectJAutoProxy
+@PropertySource("classpath:/properties/app.properties")
 public class hibernate {
+    @Autowired
+    private org.springframework.core.env.Environment environment;
     @Bean
     public DataSource dataSource(){
         BasicDataSource dataSource=new BasicDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/university");
-        dataSource.setUsername("root");
-        dataSource.setPassword("Rootpassword");
+        dataSource.setDriverClassName(environment.getRequiredProperty("DB.Driver"));
+        dataSource.setUrl(environment.getRequiredProperty("DB.url"));
+        dataSource.setUsername(environment.getRequiredProperty("DB.username"));
+        dataSource.setPassword(environment.getProperty("DB.password"));
         dataSource.setInitialSize(1);
         dataSource.setMaxTotal(5);
         dataSource.setMaxIdle(5);
@@ -41,7 +42,7 @@ public class hibernate {
     @Bean(name = {"properties"})
     public Properties hibernateProperties(){
         Properties property=new Properties();
-        property.setProperty(Environment.DIALECT,"org.hibernate.dialect.MySQL5Dialect");
+        property.setProperty(Environment.DIALECT,environment.getRequiredProperty("Hibernate.dialect"));
        // property.put("javax.persistence.validation.mode","none");
        // property.setProperty(Environment.URL,"jdbc:mysql://localhost:3306/university");
        // property.setProperty(Environment.DRIVER,"com.mysql.cj.jdbc.Driver");
